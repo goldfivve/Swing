@@ -16,6 +16,7 @@ public class Board extends JPanel implements MouseListener {
     Medium medium;
     Advanced advanced;
     int value;
+    int minesValue;
     int start;
 
 
@@ -23,14 +24,15 @@ public class Board extends JPanel implements MouseListener {
 
     public Board(Level level) {
 
-        start =0;
+        start = 0;
 
 
         if (level instanceof Beginner) {
             beginner = new Beginner();
             value = Beginner.size;
             tile = new Field[value][value];
-            //placeMine(beginner);
+            minesValue = Beginner.mineNumber;
+            placeMine(beginner);
             //fieldMinesNumber();
 
         }
@@ -39,6 +41,7 @@ public class Board extends JPanel implements MouseListener {
             medium = new Medium();
             value = Medium.size;
             tile = new Field[value][value];
+            minesValue = Medium.mineNumber;
             //placeMine(medium);
             //fieldMinesNumber();
 
@@ -50,6 +53,7 @@ public class Board extends JPanel implements MouseListener {
             advanced = new Advanced();
             value = Advanced.size;
             tile = new Field[value][value];
+            minesValue = Advanced.mineNumber;
             //placeMine(advanced);
             //fieldMinesNumber();
         }
@@ -114,7 +118,7 @@ public class Board extends JPanel implements MouseListener {
 
     private void placeMine(Level level) {
         int mine = 0;
-        while (mine < level.mineNumber + 1) {
+        while (mine < minesValue + 1) {
 
             int x = generateRandomIndex();
             int y = generateRandomIndex();
@@ -172,19 +176,45 @@ public class Board extends JPanel implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        start = 1;
-        System.out.println(e.getX()+ " " + e.getY());
-        int clickedX = e.getX();
-        int clickedY = e.getY();
+        if(SwingUtilities.isLeftMouseButton(e)) {
+            start = 1;
+            System.out.println(e.getX() + " " + e.getY());
+            int clickedX = e.getX();
+            int clickedY = e.getY();
 
-        for(int i = 0; i < value; i++){
-            for(int j=0; j<value; j++){
-                if(tile[i][j].contains(clickedX,clickedY)){
+            for (int i = 0; i < value; i++) {
+                for (int j = 0; j < value; j++) {
+                    if (tile[i][j].contains(clickedX, clickedY) && !tile[i][j].isMine && !tile[i][j].isFlag) {
 
-                    tile[i][j].rectangleColor = Color.WHITE;
+                        tile[i][j].isCovered=false;
+                        tile[i][j].rectangleColor = Color.WHITE;
+                        this.repaint();
+                    }
+                    if(tile[i][j].contains(clickedX, clickedY) && tile[i][j].isMine && !tile[i][j].isFlag){
+                        tile[i][j].rectangleColor = Color.RED;
+                        this.repaint();
+                    }
                 }
-            }
 
+            }
+        }
+        if(SwingUtilities.isRightMouseButton(e)){
+            start = 1;
+            System.out.println(e.getX() + " " + e.getY());
+            int clickedX = e.getX();
+            int clickedY = e.getY();
+
+            for (int i = 0; i < value; i++) {
+                for (int j = 0; j < value; j++) {
+                    if (tile[i][j].contains(clickedX, clickedY)&&tile[i][j].isCovered) {
+
+                        tile[i][j].isFlag=true;
+                        tile[i][j].rectangleColor = Color.BLUE;
+                        this.repaint();
+                    }
+                }
+
+            }
         }
 
 
