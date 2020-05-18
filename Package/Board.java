@@ -1,116 +1,193 @@
 package Package;
 import javax.swing.*;
 import java.awt.*;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Random;
 
+import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener;
+
 public class Board extends JPanel implements MouseListener {
 
     public Level level;
-    public Field [][] board;
-    Graphics graphics;
-    public Board(Level level){
+    public Field [][] tile;
+    Beginner beginner;
+    Medium medium;
+    Advanced advanced;
+    int value;
+    int start;
 
 
+
+
+    public Board(Level level) {
+
+        start =0;
+
+
+        if (level instanceof Beginner) {
+            beginner = new Beginner();
+            value = Beginner.size;
+            tile = new Field[value][value];
+            //placeMine(beginner);
+            //fieldMinesNumber();
+
+        }
+        if (level instanceof Medium) {
+
+            medium = new Medium();
+            value = Medium.size;
+            tile = new Field[value][value];
+            //placeMine(medium);
+            //fieldMinesNumber();
+
+
+
+        }
+        if (level instanceof Advanced) {
+
+            advanced = new Advanced();
+            value = Advanced.size;
+            tile = new Field[value][value];
+            //placeMine(advanced);
+            //fieldMinesNumber();
+        }
         addMouseListener(this);
-        if(level instanceof Beginner){
-            paintBoard(level, graphics);
-            this.createBoard(level);
-            this.placeMine(level);
-            this.fieldMinesNumber(board);
-        }
-        if(level instanceof Medium){
-            this.createBoard(level);
-            this.placeMine(level);
-            this.fieldMinesNumber(board);
-        }
-        if(level instanceof Advanced){
-            this.createBoard(level);
-            this.placeMine(level);
-            this.fieldMinesNumber(board);
-        }
-
-
 
     }
 
-    void createBoard(Level level){
 
-        for(int i=0; i<level.size; i++){
-            for (int j=0; j<level.size; j++){
 
-                board[i][j] = new Field(false);
+    @Override
+    public void paintComponent(Graphics graphics){
+        if(start==0) {
+            graphics.setColor(Color.BLACK);
+            graphics.fillRect(0, 0, 692, 800);
+            graphics.setColor(Color.DARK_GRAY);
+            for (int i = 0; i < value; i++) {
+                for (int j = 0; j < value; j++) {
 
+                    graphics.fillRect(132 + (54 * j), 200 + (54 * i), 50, 50);
+                    tile[i][j] = new Field(132 + (54 * j), 200 + (54 * i), 50, 50);
+
+
+                    //graphics.fillRect(116+(29 * j), 200 + (29 * i), 25, 25);
+                    //tile[i][j]=new Field(116+(29 * j), 200 + (29 * i), 25, 25);
+
+                    //graphics.fillRect((29 * j), 50 + (29 * i), 25, 25);
+                    // tile[i][j]=new Field((29 * j), 50 + (29 * i), 25, 25);
+
+
+                }
+            }
+        }
+        if(start == 1){
+
+            for (int i = 0; i < value; i++) {
+                for (int j = 0; j < value; j++) {
+
+
+                    graphics.setColor(tile[i][j].rectangleColor);
+                    graphics.fillRect(132 + (54 * j), 200 + (54 * i), 50, 50);
+
+
+
+                    //graphics.fillRect(116+(29 * j), 200 + (29 * i), 25, 25);
+                    //tile[i][j]=new Field(116+(29 * j), 200 + (29 * i), 25, 25);
+
+                    //graphics.fillRect((29 * j), 50 + (29 * i), 25, 25);
+                    // tile[i][j]=new Field((29 * j), 50 + (29 * i), 25, 25);
+
+
+                }
             }
 
         }
 
+
+
+
+
     }
 
 
-    void paintBoard(Level level, Graphics graphics){
-        graphics.setColor(Color.BLACK);
-        graphics.fillRect(0,200,400,400);
-        graphics.setColor(Color.DARK_GRAY);
-        for (int i=0; i <level.size; i++){
-            for(int j=0; j<level.size; j++){
-                graphics.fillRect((30)*j,200+(30*i),50,50);
-            }
-        }
-    }
-
-    private void placeMine(Level level){
-        int mine=0;
-        while(mine<level.mineNumber+1){
+    private void placeMine(Level level) {
+        int mine = 0;
+        while (mine < level.mineNumber + 1) {
 
             int x = generateRandomIndex();
             int y = generateRandomIndex();
 
-            if(!board[x][y].isMine) {
+            if (!tile[x][y].isMine) {
 
-                board[x][y].isMine=true;
+                tile[x][y].isMine = true;
                 mine++;
             }
 
         }
     }
 
-     int generateRandomIndex(){
+
+    private int generateRandomIndex() {
         Random rnd = new Random();
-        int numberField = rnd.nextInt(level.size);
+        int numberField = rnd.nextInt(value);
         return numberField;
     }
 
-    private void fieldMinesNumber(Field [][] board){
-       for(int i=0; i<level.size; i++) {
-          for(int j=0; j<level.size; j++) board[i][j].minesAround = countMinesAround(i,j);
-       }
+    private void fieldMinesNumber() {
+        for (int i = 0; i < value; i++) {
+            for (int j = 0; j < value; j++) {
+                tile[i][j].minesAround = countMinesAround(i, j);
+            }
+        }
     }
-    private int countMinesAround(int x, int y){
+
+
+    private int countMinesAround(int x, int y) {
+
 
 
         int mine = 0;
-        for(int i=x-1;i<x+2;i++){
-                for(int j=y-1; j<y+2; j++){
-                    if(insideBoard(i,j) && board[i][j].isMine) mine++;
-                    else continue;
-                }
+        for (int i = x - 1; i < x + 2; i++) {
+            for (int j = y - 1; j < y + 2; j++) {
+                if (insideBoard(i, j) && tile[i][j].isMine) mine++;
+                else continue;
+            }
         }
 
         return mine;
 
 
     }
+
+
     boolean insideBoard(int x, int y) {
-        if (x<level.size && y<level.size) return true;
+        if (x < value && y < value) return true;
 
         return false;
     }
 
+
     @Override
     public void mouseClicked(MouseEvent e) {
-        System.out.println(e.getX() + e.getY());
+
+        start = 1;
+        System.out.println(e.getX()+ " " + e.getY());
+        int clickedX = e.getX();
+        int clickedY = e.getY();
+
+        for(int i = 0; i < value; i++){
+            for(int j=0; j<value; j++){
+                if(tile[i][j].contains(clickedX,clickedY)){
+
+                    tile[i][j].rectangleColor = Color.WHITE;
+                }
+            }
+
+        }
+
+
     }
 
     @Override
@@ -132,50 +209,4 @@ public class Board extends JPanel implements MouseListener {
     public void mouseExited(MouseEvent e) {
 
     }
-
-    /*
-
-int countMinesAround(int x, int y){
-
-
-        int mine = 0;
-
-        if(board[x][y].isCovered || !insideBoard(x,y) ) return -1;
-
-        else{
-
-            for(int i=x-1; i<x+2;i++ ){
-                for(int j=y-1; j<j+2; j++){
-
-                    if(insideBoard(i,j) && board[i][j].isMine) mine++;
-                    else continue;
-                }
-            }
-            return mine;
-        }
-
-    }
-    boolean isFlag(int x, int y) {
-
-        if(board[x][y].isFlag && board[x][y].isCovered && insideBoard(x,y))return true;
-        else return false;
-    }
-    void putFlag(int x, int y) {
-        if (board[x][y].isCovered && insideBoard(x,y)) board[x][y].isFlag=true;
-    }
-
-    boolean isCovered(int x, int y) {
-        if(board[x][y].isCovered && insideBoard(x,y))return true;
-
-        return false;
-    }
-    void uncoverField(int x, int y) {
-
-        if(board[x][y].isCovered && !board[x][y].isMine) board[x][y].isCovered=false;
-    }
-    boolean insideBoard(int x, int y) {
-        if (x<level.size && y<level.size) return true;
-
-        return  false;
-     */
 }
