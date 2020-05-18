@@ -32,9 +32,6 @@ public class Board extends JPanel implements MouseListener {
             value = Beginner.size;
             tile = new Field[value][value];
             minesValue = Beginner.mineNumber;
-            placeMine(beginner);
-            //fieldMinesNumber();
-
         }
         if (level instanceof Medium) {
 
@@ -42,11 +39,6 @@ public class Board extends JPanel implements MouseListener {
             value = Medium.size;
             tile = new Field[value][value];
             minesValue = Medium.mineNumber;
-            //placeMine(medium);
-            //fieldMinesNumber();
-
-
-
         }
         if (level instanceof Advanced) {
 
@@ -54,11 +46,10 @@ public class Board extends JPanel implements MouseListener {
             value = Advanced.size;
             tile = new Field[value][value];
             minesValue = Advanced.mineNumber;
-            //placeMine(advanced);
-            //fieldMinesNumber();
         }
         addMouseListener(this);
-
+        placeMine();
+        fieldMinesNumber();
     }
 
 
@@ -116,7 +107,7 @@ public class Board extends JPanel implements MouseListener {
     }
 
 
-    private void placeMine(Level level) {
+    private void placeMine() {
         int mine = 0;
         while (mine < minesValue + 1) {
 
