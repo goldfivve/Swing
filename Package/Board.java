@@ -49,7 +49,7 @@ public class Board extends JPanel implements MouseListener {
         }
         addMouseListener(this);
         placeMine();
-        fieldMinesNumber();
+        //fieldMinesNumber();
     }
 
 
@@ -109,16 +109,21 @@ public class Board extends JPanel implements MouseListener {
 
     private void placeMine() {
         int mine = 0;
-        while (mine < minesValue + 1) {
+        while (mine < this.minesValue) {
 
             int x = generateRandomIndex();
             int y = generateRandomIndex();
 
+
+            System.out.println(x +" "+ y);
             if (!tile[x][y].isMine) {
 
                 tile[x][y].isMine = true;
                 mine++;
             }
+
+
+
 
         }
     }
